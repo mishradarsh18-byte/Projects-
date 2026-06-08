@@ -282,14 +282,17 @@
   }
   .logos .lbl { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-dim); font-weight: 600; opacity:1; }
 
-  .avatars { display: flex; }
-  .avatars i {
-    width: 38px; height: 38px; border-radius: 50%;
-    border: 2px solid var(--bg); margin-left: -11px;
-    background-size: cover; background-position: center;
-    display: block;
+  .exam-scales { display: flex; gap: 26px; }
+  .exam-scales .scale { display: flex; flex-direction: column; gap: 4px; }
+  .exam-scales .scale b {
+    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
+    color: var(--ink-dim); font-weight: 600;
   }
-  .avatars i:first-child { margin-left: 0; }
+  .exam-scales .scale .stat-num { color: var(--ink); position: relative; }
+  .exam-scales .scale:first-child .stat-num::after {
+    content: ""; position: absolute; right: -14px; top: 12%; bottom: 12%;
+    width: 1px; background: var(--line);
+  }
   .stat-num { font-family: "Anton", sans-serif; font-size: 26px; line-height: 1; }
   .stat-cap { color: var(--ink-dim); font-size: 13px; }
 
@@ -416,16 +419,11 @@
         <span>Booth</span>
       </div>
       <div data-rise style="--d:.3s">
-        <div class="avatars">
-          <i style="background-image:url('https://i.pravatar.cc/80?img=12')"></i>
-          <i style="background-image:url('https://i.pravatar.cc/80?img=32')"></i>
-          <i style="background-image:url('https://i.pravatar.cc/80?img=45')"></i>
-          <i style="background-image:url('https://i.pravatar.cc/80?img=5')"></i>
+        <div class="exam-scales">
+          <div class="scale"><b>GMAT Focus</b><span class="stat-num">205&ndash;805</span></div>
+          <div class="scale"><b>GRE General</b><span class="stat-num">130&ndash;170</span></div>
         </div>
-        <div>
-          <div class="stat-num">120K+</div>
-          <div class="stat-cap">students coached</div>
-        </div>
+        <div class="stat-cap">every mock graded on the real exam scale</div>
       </div>
       <div class="guarantee" data-rise style="--d:.4s">
         <svg class="seal" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -473,6 +471,16 @@
     resize();
     window.addEventListener('resize', resize);
 
+    // ---- pointer state for the cursor "expand" lens ----
+    const mouse = { x: 0, y: 0, inside: false, infl: 0 };
+    canvas.addEventListener('pointermove', (e) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - r.left;
+      mouse.y = e.clientY - r.top;
+      mouse.inside = true;
+    });
+    canvas.addEventListener('pointerleave', () => { mouse.inside = false; });
+
     let t = 0;
     function frame() {
       ctx.clearRect(0, 0, W, H);
@@ -480,6 +488,10 @@
       const cosA = Math.cos(t), sinA = Math.sin(t);
       const tilt = 0.42, cosT = Math.cos(tilt), sinT = Math.sin(tilt);
       const fov = 2.6;
+
+      // ease the cursor influence in/out so the bulge feels smooth
+      mouse.infl += ((mouse.inside ? 1 : 0) - mouse.infl) * 0.08;
+      const RAD = Math.min(W, H) * 0.30;          // size of the expand area
 
       for (let k = 0; k < pts.length; k++) {
         const p = pts[k];
@@ -492,12 +504,28 @@
         let z2 = y * sinT + z * cosT;
 
         const scale = fov / (fov + z2);
-        const sx = cx + x * R * scale;
-        const sy = cy + y2 * R * scale;
+        let sx = cx + x * R * scale;
+        let sy = cy + y2 * R * scale;
 
         const depth = (z2 + 1) / 2;               // 0 far .. 1 near
-        const size = (0.5 + depth * 1.7) * scale;
-        const alpha = 0.12 + depth * 0.78;
+        let size = (0.5 + depth * 1.7) * scale;
+        let alpha = 0.12 + depth * 0.78;
+
+        // ---- cursor expansion: push dots outward & enlarge near the pointer ----
+        if (mouse.infl > 0.01) {
+          const dx = sx - mouse.x, dy = sy - mouse.y;
+          const d = Math.hypot(dx, dy);
+          if (d < RAD) {
+            const f = 1 - d / RAD;                 // 0 at edge .. 1 at centre
+            const fall = f * f * mouse.infl;
+            const push = fall * RAD * 0.42;        // outward shift = area expands
+            const inv = 1 / (d || 0.0001);
+            sx += dx * inv * push;
+            sy += dy * inv * push;
+            size *= 1 + fall * 2.4;
+            alpha = Math.min(1, alpha + fall * 0.55);
+          }
+        }
 
         ctx.beginPath();
         ctx.arc(sx, sy, Math.max(0.4, size), 0, Math.PI * 2);
