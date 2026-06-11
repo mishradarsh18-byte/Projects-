@@ -3,44 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ScoreForge — Elite GMAT &amp; GRE Prep</title>
+<title>ScoreForge — Prep that tells you the truth · GMAT &amp; GRE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --bg:        #0e0e0e;
-    --panel:     #161616;
-    --panel-2:   #131313;
-    --ink:       #ece6da;
-    --ink-dim:   #8f8b82;
-    --accent:    #f0353f;
-    --accent-ink:#fff5f5;
-    --line:      rgba(236, 230, 218, 0.13);
-    --frame:     rgba(236, 230, 218, 0.22);
+    --bg:        #f4efe3;
+    --panel:     #fbf8f1;
+    --panel-2:   #fffdf8;
+    --ink:       #211c14;
+    --ink-dim:   #6f665a;
+    --ink-faint: #9a9082;
+    --accent:    #df6a26;
+    --accent-d:  #c4571a;
+    --accent-ink:#fff7f1;
+    --yellow:    #f2b211;
+    --green:     #3a9d5d;
+    --line:      rgba(33, 28, 20, 0.12);
+    --frame:     rgba(33, 28, 20, 0.20);
     --radius:    999px;
+    --px:        clamp(24px, 3.4vw, 50px);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
 
   body {
-    background: #2c2c2c;
-    background-image:
-      radial-gradient(120% 90% at 50% -10%, #3a3a3a 0%, #262626 55%, #1d1d1d 100%);
+    background: #e6dcc8;
+    background-image: radial-gradient(120% 90% at 50% -10%, #efe6d4 0%, #e3d8c2 55%, #d8ccb2 100%);
     color: var(--ink);
     font-family: "Archivo", system-ui, sans-serif;
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(16px, 4vw, 56px);
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: clamp(12px, 3vw, 48px);
     letter-spacing: .01em;
     -webkit-font-smoothing: antialiased;
   }
-
-  ::selection { background: var(--accent); color: #fff; }
+  ::selection { background: var(--yellow); color: var(--ink); }
+  a { color: inherit; text-decoration: none; }
 
   /* ---------- Framed shell ---------- */
   .shell {
@@ -51,319 +52,227 @@
     position: relative;
     overflow: hidden;
   }
-
-  /* subtle grain overlay */
   .shell::after {
-    content: "";
-    position: absolute; inset: 0;
-    pointer-events: none;
-    opacity: .035;
-    mix-blend-mode: screen;
+    content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 6;
+    opacity: .045; mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
+  /* ---------- Shared bits ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; cursor: pointer;
+    font-family: inherit; font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+    padding: 15px 26px; border: 1px solid transparent;
+    transition: transform .18s ease, box-shadow .25s ease, background .2s, border-color .2s, color .2s;
+  }
+  .btn svg { width: 15px; height: 15px; }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover { background: #ef7a33; transform: translateY(-2px); box-shadow: 0 16px 32px -12px var(--accent); }
+  .btn-ghost { background: transparent; border-color: var(--frame); color: var(--ink); }
+  .btn-ghost:hover { border-color: var(--ink); transform: translateY(-2px); }
+
+  .link-arrow { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; font-size: 13px; letter-spacing: .04em; color: var(--accent); }
+  .link-arrow svg { width: 14px; height: 14px; transition: transform .2s ease; }
+  .link-arrow:hover svg { transform: translateX(4px); }
+
+  .kicker { display: inline-block; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; font-weight: 700; color: var(--accent); }
+
   /* ---------- Nav ---------- */
   nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 22px clamp(20px, 3vw, 40px);
-    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px var(--px); border-bottom: 1px solid var(--line);
+    position: relative; z-index: 5;
   }
-
-  .brand {
-    display: flex; align-items: center; gap: 11px;
-    font-weight: 700; font-size: 19px; letter-spacing: -.01em;
-  }
-  .brand .glyph {
-    width: 24px; height: 24px; flex: none;
-    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
-    gap: 3px;
-  }
-  .brand .glyph i {
-    display: block; background: var(--ink); border-radius: 2px;
-  }
+  .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; font-size: 19px; letter-spacing: -.01em; }
+  .brand .glyph { width: 24px; height: 24px; flex: none; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 3px; }
+  .brand .glyph i { display: block; background: var(--ink); border-radius: 2px; }
   .brand .glyph i:nth-child(2){ background: var(--accent); border-radius: 50%; }
   .brand .glyph i:nth-child(3){ opacity: .55; }
-  .brand b { font-weight: 700; }
-  .brand span { color: var(--ink-dim); font-weight: 500; }
+  .brand b { font-weight: 700; } .brand span { color: var(--ink-dim); font-weight: 500; }
+  .menu { display: flex; align-items: center; gap: clamp(18px, 2.6vw, 34px); list-style: none; }
+  .menu a { color: var(--ink); font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; position: relative; padding: 4px 0; transition: color .25s; }
+  .menu a::after { content:""; position:absolute; left:0; bottom:-2px; height:2px; width:0; background: var(--accent); transition: width .28s ease; }
+  .menu a:hover { color: var(--accent-d); } .menu a:hover::after { width: 100%; }
+  .nav-right { display: flex; align-items: center; gap: 18px; }
+  .nav-right .login { font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+  @media (max-width: 1000px){ .menu { display:none; } }
 
-  .menu {
-    display: flex; align-items: center; gap: clamp(20px, 3vw, 42px);
-    list-style: none;
-  }
-  .menu a {
-    color: var(--ink); text-decoration: none;
-    font-size: 13px; font-weight: 600; letter-spacing: .14em;
-    text-transform: uppercase; position: relative; padding: 4px 0;
-    transition: color .25s ease;
-  }
-  .menu a::after {
-    content:""; position:absolute; left:0; bottom:-2px; height:2px; width:0;
-    background: var(--accent); transition: width .28s ease;
-  }
-  .menu a:hover { color: #fff; }
-  .menu a:hover::after { width: 100%; }
+  /* ---------- Hero ---------- */
+  .hero { display: grid; grid-template-columns: 1.55fr 1fr; border-bottom: 1px solid var(--line); }
+  .hero-left { padding: clamp(34px, 4vw, 64px) var(--px) clamp(30px, 3vw, 44px); border-right: 1px solid var(--line); position: relative; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 26px; }
+  .eyebrow .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 0 rgba(223,106,38,.6); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%{box-shadow:0 0 0 0 rgba(223,106,38,.5)} 70%{box-shadow:0 0 0 9px rgba(223,106,38,0)} 100%{box-shadow:0 0 0 0 rgba(223,106,38,0)} }
 
-  .login {
-    background: var(--accent); color: var(--accent-ink);
-    border: none; cursor: pointer;
-    font-family: inherit; font-weight: 700; font-size: 12px;
-    letter-spacing: .16em; text-transform: uppercase;
-    padding: 13px 20px; display: inline-flex; align-items: center; gap: 9px;
-    transition: transform .2s ease, box-shadow .25s ease, background .25s ease;
-  }
-  .login:hover { transform: translateY(-2px); box-shadow: 0 12px 30px -10px var(--accent); background: #ff414b; }
-  .login svg { width: 13px; height: 13px; }
-
-  /* ---------- Hero grid ---------- */
-  .hero {
-    display: grid;
-    grid-template-columns: 1.55fr 1fr;
-  }
-  .hero-left {
-    padding: clamp(30px, 4vw, 60px) clamp(24px, 3.4vw, 50px) 30px;
-    border-right: 1px solid var(--line);
-    position: relative;
-  }
-
-  .eyebrow {
-    display: inline-flex; align-items: center; gap: 10px;
-    font-size: 11px; letter-spacing: .26em; text-transform: uppercase;
-    color: var(--ink-dim); margin-bottom: 26px;
-  }
-  .eyebrow .pulse {
-    width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
-    box-shadow: 0 0 0 0 rgba(240,53,63,.6); animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(240,53,63,.5); }
-    70%  { box-shadow: 0 0 0 9px rgba(240,53,63,0); }
-    100% { box-shadow: 0 0 0 0 rgba(240,53,63,0); }
-  }
-
-  h1 {
-    font-family: "Anton", sans-serif;
-    font-weight: 400;
-    text-transform: uppercase;
-    font-size: clamp(38px, 6.4vw, 92px);
-    line-height: .92;
-    letter-spacing: .005em;
-    color: var(--ink);
-    position: relative;
-    width: fit-content;
-  }
+  h1 { font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: clamp(38px, 6vw, 86px); line-height: .92; letter-spacing: .005em; color: var(--ink); position: relative; width: fit-content; }
   h1 .line { display: block; overflow: hidden; }
   h1 .line > span { display: inline-block; will-change: transform; }
+  .slash { position: absolute; left: -3%; top: 30%; width: 70%; height: clamp(34px, 5vw, 60px); background: var(--accent); transform: rotate(-13deg); transform-origin: left center; border-radius: 4px; z-index: 2; opacity: .42; mix-blend-mode: multiply; }
 
-  /* the red diagonal slash crossing the headline */
-  .slash {
-    position: absolute;
-    left: -3%;
-    top: 30%;
-    width: 70%;
-    height: clamp(34px, 5vw, 64px);
-    background: var(--accent);
-    transform: rotate(-13deg);
-    transform-origin: left center;
-    border-radius: 4px;
-    box-shadow: 0 14px 40px -14px var(--accent);
-    z-index: 2;
-    mix-blend-mode: normal;
-    opacity: .94;
-  }
+  .lead { margin-top: 24px; max-width: 50ch; color: var(--ink-dim); font-size: clamp(14px, 1.1vw, 16px); line-height: 1.6; }
+  .lead b { color: var(--ink); font-weight: 600; }
 
-  .lead {
-    margin-top: 26px;
-    max-width: 46ch;
-    color: var(--ink-dim);
-    font-size: clamp(14px, 1.1vw, 16px);
-    line-height: 1.6;
-  }
+  .cta-row { margin-top: 32px; display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+  .cta-row .note { font-size: 13px; color: var(--ink-faint); }
+  .state-cold,.state-auth,.state-mid { display: none; }
+  body[data-state="cold"] .state-cold { display: inline-flex; }
+  body[data-state="auth"] .state-auth { display: inline-flex; }
+  body[data-state="mid"]  .state-mid  { display: inline-flex; }
+  .cta-row.state-cold,.cta-row.state-auth,.cta-row.state-mid { display: none; }
+  body[data-state="cold"] .cta-row.state-cold,
+  body[data-state="auth"] .cta-row.state-auth,
+  body[data-state="mid"]  .cta-row.state-mid { display: flex; }
+  .save-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 0 rgba(76,170,106,.5); animation: save 2s infinite; }
+  @keyframes save { 70%{box-shadow:0 0 0 7px rgba(76,170,106,0)} 100%{box-shadow:0 0 0 0 rgba(76,170,106,0)} }
 
-  .cta-row {
-    margin-top: 34px;
-    display: flex; align-items: center; gap: 26px; flex-wrap: wrap;
-  }
-  .btn-primary {
-    background: var(--accent); color: var(--accent-ink);
-    border: none; cursor: pointer; font-family: inherit;
-    font-weight: 700; font-size: 13px; letter-spacing: .16em; text-transform: uppercase;
-    padding: 17px 34px;
-    transition: transform .2s ease, box-shadow .25s ease, background .25s;
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -12px var(--accent); background:#ff414b; }
+  .tags { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 9px 8px; }
+  .pill { border: 1px solid var(--frame); border-radius: var(--radius); padding: 8px 15px; font-size: 12.5px; font-weight: 500; white-space: nowrap; color: var(--ink); background: rgba(255,255,255,.5); transition: transform .25s, border-color .25s, color .25s, background .25s; }
+  .pill:hover { border-color: var(--accent); color: var(--accent-d); transform: translateY(-3px); background: rgba(223,106,38,.12); }
 
-  .watch {
-    display: inline-flex; align-items: center; gap: 14px;
-    color: var(--ink); cursor: pointer;
-    font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase;
-  }
-  .watch .play {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: #2a2a2a; border: 1px solid var(--frame);
-    display: grid; place-items: center; position: relative;
-    transition: transform .25s ease, border-color .25s;
-  }
-  .watch .play::before {
-    content:""; position:absolute; inset:0; border-radius:50%;
-    border: 1px solid var(--accent); opacity:0; transform: scale(.6);
-    animation: ring 2.6s infinite;
-  }
-  @keyframes ring { 0%{opacity:.7; transform:scale(.7)} 80%,100%{opacity:0; transform:scale(1.35)} }
-  .watch:hover .play { transform: scale(1.06); border-color: var(--accent); }
-  .watch .play svg { width: 14px; height: 14px; transform: translateX(1px); fill: var(--accent); }
-
-  /* ---------- Pill tags cluster ---------- */
-  .tags {
-    position: absolute;
-    left: clamp(24px, 3.4vw, 50px);
-    right: clamp(24px, 3.4vw, 50px);
-    bottom: 22px;
-    display: flex; flex-wrap: wrap; gap: 9px 8px;
-    align-items: flex-end; justify-content: flex-end;
-    pointer-events: none;
-  }
-  .pill {
-    pointer-events: auto;
-    border: 1px solid var(--frame);
-    border-radius: var(--radius);
-    padding: 8px 16px;
-    font-size: 12.5px; font-weight: 500; white-space: nowrap;
-    color: var(--ink); background: rgba(20,20,20,.4);
-    backdrop-filter: blur(2px);
-    transition: transform .25s ease, border-color .25s, color .25s, background .25s;
-  }
-  .pill:hover { border-color: var(--accent); color: #fff; transform: translateY(-3px) rotate(0deg) !important; background: rgba(240,53,63,.12); }
-  .pill:nth-child(1){ transform: rotate(-9deg); }
-  .pill:nth-child(2){ transform: rotate(6deg); }
-  .pill:nth-child(3){ transform: rotate(-4deg); }
-  .pill:nth-child(4){ transform: rotate(8deg); }
-  .pill:nth-child(5){ transform: rotate(-7deg); }
-  .pill:nth-child(6){ transform: rotate(3deg); }
-  .pill:nth-child(7){ transform: rotate(-3deg); }
-  .pill:nth-child(8){ transform: rotate(7deg); }
-  .pill:nth-child(9){ transform: rotate(-6deg); }
-  .pill:nth-child(10){ transform: rotate(4deg); }
-  .pill:nth-child(11){ transform: rotate(-8deg); }
-
-  /* ---------- Right panel / spiral ---------- */
-  .hero-right {
-    position: relative;
-    background: radial-gradient(120% 120% at 50% 38%, #1b1b1b 0%, #0c0c0c 70%);
-    min-height: 520px;
-    overflow: hidden;
-    display: grid; place-items: center;
-  }
+  .hero-right { position: relative; background: radial-gradient(120% 120% at 50% 38%, #fbf8f1 0%, #ece1cd 72%); min-height: 520px; overflow: hidden; display: grid; place-items: center; }
   #sphere { width: 100%; height: 100%; display: block; }
-  .hero-right .badge-float {
-    position: absolute; top: 22px; right: 22px;
-    font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
-    color: var(--ink-dim); display: flex; align-items: center; gap: 8px;
+  .badge-float { position: absolute; top: 22px; right: 22px; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-dim); display: flex; align-items: center; gap: 8px; }
+  .badge-float b { color: var(--ink); font-weight: 700; }
+  @media (max-width: 940px){
+    .hero { grid-template-columns: 1fr; }
+    .hero-left { border-right: none; border-bottom: 1px solid var(--line); }
+    .hero-right { min-height: 340px; order: -1; }
   }
-  .hero-right .badge-float b { color: var(--ink); font-weight: 700; }
 
-  /* ---------- Bottom stats bar ---------- */
-  .stats {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr 1.1fr;
-    border-top: 1px solid var(--line);
-  }
-  .stats > div {
-    padding: 26px clamp(20px, 3vw, 40px);
-    display: flex; align-items: center; gap: 18px;
-  }
+  /* ---------- Trust / stats bar ---------- */
+  .stats { display: grid; grid-template-columns: 1.1fr 1fr 1.1fr; border-bottom: 1px solid var(--line); }
+  .stats > div { padding: 26px var(--px); display: flex; align-items: center; gap: 18px; }
   .stats > div + div { border-left: 1px solid var(--line); }
-
-  .logos { gap: 26px; flex-wrap: wrap; }
-  .logos span {
-    font-weight: 700; font-size: 15px; color: var(--ink);
-    opacity: .82; letter-spacing: -.01em;
-  }
-  .logos .lbl { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-dim); font-weight: 600; opacity:1; }
-
+  .logos { gap: 24px; flex-wrap: wrap; }
+  .logos span { font-weight: 700; font-size: 15px; color: var(--ink); opacity: .82; }
+  .logos .lbl { font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--ink-dim); font-weight: 600; opacity: 1; }
   .exam-scales { display: flex; gap: 26px; }
   .exam-scales .scale { display: flex; flex-direction: column; gap: 4px; }
-  .exam-scales .scale b {
-    font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-    color: var(--ink-dim); font-weight: 600;
-  }
-  .exam-scales .scale .stat-num { color: var(--ink); position: relative; }
-  .exam-scales .scale:first-child .stat-num::after {
-    content: ""; position: absolute; right: -14px; top: 12%; bottom: 12%;
-    width: 1px; background: var(--line);
-  }
-  .stat-num { font-family: "Anton", sans-serif; font-size: 26px; line-height: 1; }
+  .exam-scales .scale b { font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--ink-dim); font-weight: 600; }
+  .stat-num { font-family: "Anton", sans-serif; font-size: 26px; line-height: 1; color: var(--ink); }
   .stat-cap { color: var(--ink-dim); font-size: 13px; }
-
   .guarantee { display: flex; align-items: center; gap: 16px; }
-  .seal {
-    width: 40px; height: 40px; flex: none; color: var(--accent);
-    animation: spin 14s linear infinite;
-  }
+  .seal { width: 40px; height: 40px; flex: none; color: var(--accent); animation: spin 14s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .guarantee p { font-size: 13.5px; line-height: 1.45; color: var(--ink); }
   .guarantee b { color: var(--accent); }
+  @media (max-width: 820px){ .stats { grid-template-columns: 1fr; } .stats > div + div { border-left: none; border-top: 1px solid var(--line); } }
 
-  /* ---------- Load-in animation ---------- */
+  /* ---------- Generic section ---------- */
+  .band { padding: clamp(48px, 7vw, 92px) var(--px); border-bottom: 1px solid var(--line); position: relative; z-index: 2; }
+  .sec-head { max-width: 64ch; margin-bottom: 42px; }
+  .sec-head h2 { font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: clamp(28px, 4.2vw, 56px); line-height: .96; letter-spacing: .01em; margin-top: 16px; }
+  .sec-head p { margin-top: 16px; color: var(--ink-dim); font-size: 16px; max-width: 54ch; }
+
+  /* ---------- Archetype grid ---------- */
+  .arch-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .arch { background: var(--panel); border: 1px solid var(--line); padding: 28px; display: flex; flex-direction: column; gap: 13px; min-height: 200px; transition: transform .22s, box-shadow .25s, border-color .25s, background .25s; }
+  .arch:hover { transform: translateY(-4px); border-color: rgba(223,106,38,.45); background: var(--panel-2); box-shadow: 0 24px 50px -30px rgba(33,28,20,.22); }
+  .arch .num { font-family: "Anton", sans-serif; font-size: 15px; color: var(--accent); }
+  .arch h3 { font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 26px; letter-spacing: .01em; line-height: 1; }
+  .arch p { color: var(--ink-dim); font-size: 14.5px; flex: 1; line-height: 1.55; }
+  @media (max-width: 720px){ .arch-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Difference 3-panel ---------- */
+  .diff-grid { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--line); background: var(--panel); }
+  .diff { padding: 32px; border-right: 1px solid var(--line); }
+  .diff:last-child { border-right: none; }
+  .diff .ic { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 20px; background: rgba(223,106,38,.12); border: 1px solid rgba(223,106,38,.3); }
+  .diff .ic svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 1.8; }
+  .diff h3 { font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 21px; letter-spacing: .01em; margin-bottom: 11px; line-height: 1.02; }
+  .diff p { color: var(--ink-dim); font-size: 14.5px; line-height: 1.55; }
+  @media (max-width: 820px){ .diff-grid { grid-template-columns: 1fr; } .diff { border-right: none; border-bottom: 1px solid var(--line); } .diff:last-child{ border-bottom: none; } }
+
+  /* ---------- Honesty band ---------- */
+  .honesty { background: #f6ecd6; }
+  .honesty .big { font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: clamp(26px, 3.6vw, 46px); line-height: .98; margin-top: 16px; max-width: 20ch; }
+  .honesty-list { margin-top: 38px; display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .hon-item { background: var(--bg); padding: 26px; }
+  .hon-item .x { font-family: "Anton", sans-serif; font-weight: 400; text-transform: uppercase; font-size: 19px; color: var(--accent); display: flex; align-items: center; gap: 10px; margin-bottom: 10px; letter-spacing: .01em; }
+  .hon-item .x svg { width: 16px; height: 16px; stroke: var(--accent); stroke-width: 2.6; }
+  .hon-item p { color: var(--ink-dim); font-size: 14px; line-height: 1.55; }
+  .honesty .foot { margin-top: 34px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+  .honesty .foot span { color: var(--ink-faint); font-size: 14px; }
+  @media (max-width: 820px){ .honesty-list { grid-template-columns: 1fr; } }
+
+  /* ---------- Social proof ---------- */
+  .social-full { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .stat-card { background: var(--panel); border: 1px solid var(--line); padding: 30px; }
+  .stat-card .n { font-family: "Anton", sans-serif; font-weight: 400; font-size: 46px; line-height: 1; color: var(--accent); }
+  .stat-card .c { color: var(--ink-dim); font-size: 14px; margin-top: 10px; line-height: 1.5; }
+  @media (max-width: 720px){ .social-full { grid-template-columns: 1fr; } }
+
+  /* ---------- Pricing ---------- */
+  .price-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+  .tier { background: var(--panel); border: 1px solid var(--line); padding: 30px; display: flex; flex-direction: column; gap: 18px; }
+  .tier.featured { border-color: var(--accent); box-shadow: 0 24px 60px -34px var(--accent); position: relative; }
+  .tier.featured::before { content:"Most chosen"; position:absolute; top:-11px; left:30px; background:var(--accent); color:#fff; font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:5px 12px; }
+  .tier .name { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:22px; letter-spacing:.02em; }
+  .tier .price { font-family:"Anton",sans-serif; font-weight:400; font-size:40px; line-height:1; }
+  .tier .price small { font-size:14px; font-family:"Archivo"; color:var(--ink-faint); font-weight:500; }
+  .tier .desc { color: var(--ink-dim); font-size:14px; }
+  .tier ul { list-style:none; display:flex; flex-direction:column; gap:11px; flex:1; }
+  .tier li { display:flex; align-items:flex-start; gap:10px; font-size:13.5px; color:var(--ink); }
+  .tier li svg { width:16px; height:16px; stroke:var(--accent); stroke-width:2.6; fill:none; flex:none; margin-top:2px; }
+  .tier .btn { justify-content:center; }
+  .price-foot { text-align:center; margin-top:28px; color: var(--ink-dim); font-size:14px; display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; }
+  @media (max-width: 820px){ .price-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 58px var(--px) 34px; position: relative; z-index: 2; }
+  .foot-grid { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 36px; }
+  footer .brand { margin-bottom: 14px; }
+  footer .tag { font-size: 14px; color: var(--ink-dim); max-width: 30ch; }
+  .foot-col h4 { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; font-weight: 700; }
+  .foot-col a { display: block; font-size: 14px; padding: 5px 0; color: var(--ink-dim); transition: color .2s; }
+  .foot-col a:hover { color: var(--ink); }
+  .foot-bottom { margin-top: 44px; padding-top: 22px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 12.5px; color: var(--ink-faint); }
+  @media (max-width: 820px){ .foot-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px){ .foot-grid { grid-template-columns: 1fr; } }
+
+  /* ---------- State switcher ---------- */
+  .switcher { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 80; display: flex; align-items: center; gap: 4px; background: var(--panel); border: 1px solid var(--frame); padding: 6px; border-radius: 999px; box-shadow: 0 16px 34px -12px rgba(33,28,20,.4); }
+  .switcher span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); padding: 0 8px 0 10px; }
+  .switcher button { border: none; cursor: pointer; font-family: inherit; font-weight: 600; font-size: 12px; padding: 8px 14px; border-radius: 999px; background: transparent; color: var(--ink-dim); transition: background .2s, color .2s; }
+  .switcher button.on { background: var(--accent); color: #fff; }
+  @media (max-width: 560px){ .switcher span { display:none; } }
+
+  /* ---------- Animations ---------- */
   [data-rise] { opacity: 0; transform: translateY(18px); }
-  .ready [data-rise] {
-    opacity: 1; transform: none;
-    transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1);
-    transition-delay: var(--d, 0s);
-  }
+  .ready [data-rise] { opacity: 1; transform: none; transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); transition-delay: var(--d, 0s); }
   h1 .line > span { transform: translateY(105%); }
-  .ready h1 .line > span {
-    transform: translateY(0);
-    transition: transform .9s cubic-bezier(.16,1,.3,1);
-    transition-delay: var(--d, 0s);
-  }
+  .ready h1 .line > span { transform: translateY(0); transition: transform .9s cubic-bezier(.16,1,.3,1); transition-delay: var(--d, 0s); }
   .ready .slash { animation: slashIn .7s cubic-bezier(.16,1,.3,1) both; animation-delay: .85s; }
-  @keyframes slashIn {
-    from { transform: rotate(-13deg) scaleX(0); opacity: 0; }
-    to   { transform: rotate(-13deg) scaleX(1); opacity: .94; }
-  }
-
-  /* ---------- Responsive ---------- */
-  @media (max-width: 940px) {
-    .hero { grid-template-columns: 1fr; }
-    .hero-left { border-right: none; border-bottom: 1px solid var(--line); }
-    .tags { position: static; margin-top: 40px; justify-content: flex-start; }
-    .hero-right { min-height: 360px; order: -1; }
-    .stats { grid-template-columns: 1fr; }
-    .stats > div + div { border-left: none; border-top: 1px solid var(--line); }
-  }
-  @media (max-width: 560px) {
-    .menu { display: none; }
-    body { padding: 12px; }
-  }
+  @keyframes slashIn { from { transform: rotate(-13deg) scaleX(0); opacity:0; } to { transform: rotate(-13deg) scaleX(1); opacity:.42; } }
+  [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1); }
+  [data-reveal].in { opacity: 1; transform: none; }
 </style>
 </head>
-<body>
+<body data-state="cold">
   <main class="shell" id="shell">
-    <!-- NAV -->
+
+    <!-- ======= NAV ======= -->
     <nav data-rise style="--d:.05s">
-      <div class="brand">
-        <div class="glyph"><i></i><i></i><i></i><i></i></div>
+      <a class="brand" href="#">
+        <span class="glyph"><i></i><i></i><i></i><i></i></span>
         <span><b>Score</b>Forge</span>
-      </div>
+      </a>
       <ul class="menu">
-        <li><a href="#">Programs</a></li>
-        <li><a href="#">Pricing</a></li>
-        <li><a href="#">Results</a></li>
-        <li><a href="#">About</a></li>
+        <li><a href="#archetypes">Who it's for</a></li>
+        <li><a href="#difference">How it's different</a></li>
+        <li><a href="#honesty">What we don't do</a></li>
+        <li><a href="#pricing">Pricing</a></li>
       </ul>
-      <button class="login">
-        Log in
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M9 7h8v8"/></svg>
-      </button>
+      <div class="nav-right">
+        <a class="login" href="#">Log in</a>
+        <a class="btn btn-primary" href="#">Take the diagnostic</a>
+      </div>
     </nav>
 
-    <!-- HERO -->
+    <!-- ======= HERO ======= -->
     <section class="hero">
       <div class="hero-left">
         <div class="eyebrow" data-rise style="--d:.15s"><span class="pulse"></span> GMAT Focus &amp; GRE General · 2026 syllabus</div>
-
         <h1>
           <span class="slash"></span>
           <span class="line"><span style="--d:.30s">SCORE</span></span>
@@ -371,24 +280,30 @@
           <span class="line"><span style="--d:.46s">INTO THE</span></span>
           <span class="line"><span style="--d:.54s">TOP B-SCHOOLS</span></span>
         </h1>
-
         <p class="lead" data-rise style="--d:.7s">
-          Adaptive GMAT &amp; GRE prep built by 99th-percentile tutors. Diagnostic-driven
-          study plans, 5,000+ real-style questions, and AI analytics that find the points
-          you're leaving on the table.
+          <b>Prep that tells you the truth.</b> We analyze every GMAT &amp; GRE mock the way a
+          99th-percentile candidate would — selection, execution, and exactly what to fix tomorrow.
         </p>
 
-        <div class="cta-row" data-rise style="--d:.8s">
-          <button class="btn-primary">Start free diagnostic</button>
-          <div class="watch">
-            <span class="play">
-              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </span>
-            Watch how it works
-          </div>
+        <!-- COLD LAUNCH -->
+        <div class="cta-row state-cold" data-rise style="--d:.8s">
+          <a class="btn btn-primary" href="#">Take the diagnostic — 2 hours, free
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="note">No card required.</span>
+        </div>
+        <!-- LOGGED IN -->
+        <div class="cta-row state-auth" data-rise style="--d:.8s">
+          <a class="btn btn-primary" href="#">Continue your prep
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="note">Picking up at Mock 07.</span>
+        </div>
+        <!-- RETURNING MID-DIAGNOSTIC -->
+        <div class="cta-row state-mid" data-rise style="--d:.8s">
+          <a class="btn btn-primary" href="#">Resume your diagnostic
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="note" style="display:flex;align-items:center;gap:8px;"><span class="save-dot"></span> Progress saved · 38% done</span>
         </div>
 
-        <!-- scattered pill tags -->
         <div class="tags" data-rise style="--d:.95s">
           <span class="pill">Quant</span>
           <span class="pill">Verbal</span>
@@ -396,7 +311,6 @@
           <span class="pill">AWA</span>
           <span class="pill">Vocabulary</span>
           <span class="pill">Adaptive Mocks</span>
-          <span class="pill">Flashcards</span>
           <span class="pill">Reading Comp</span>
           <span class="pill">Problem Solving</span>
           <span class="pill">AI Analytics</span>
@@ -410,35 +324,231 @@
       </div>
     </section>
 
-    <!-- STATS BAR -->
+    <!-- ======= TRUST / STATS BAR ======= -->
     <section class="stats">
-      <div class="logos" data-rise style="--d:.2s">
+      <div class="logos">
         <span class="lbl">Admits at</span>
-        <span>Wharton</span>
-        <span>INSEAD</span>
-        <span>Booth</span>
+        <span>Wharton</span><span>INSEAD</span><span>Booth</span>
       </div>
-      <div data-rise style="--d:.3s">
+      <div>
         <div class="exam-scales">
           <div class="scale"><b>GMAT Focus</b><span class="stat-num">205&ndash;805</span></div>
           <div class="scale"><b>GRE General</b><span class="stat-num">130&ndash;170</span></div>
         </div>
         <div class="stat-cap">every mock graded on the real exam scale</div>
       </div>
-      <div class="guarantee" data-rise style="--d:.4s">
+      <div class="guarantee">
         <svg class="seal" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M12 1.6l2.3 1.7 2.8-.5 1 2.7 2.5 1.4-.7 2.8 1.6 2.4-1.9 2.1.2 2.9-2.8.8-1.3 2.6-2.8-.6L12 22.4l-2.6-1.2-2.8.6-1.3-2.6-2.8-.8.2-2.9-1.9-2.1L2.4 11l-.7-2.8 2.5-1.4 1-2.7 2.8.5z"/>
-          <circle cx="12" cy="12" r="5.2" fill="#0e0e0e"/>
+          <circle cx="12" cy="12" r="5.2" fill="#f4efe3"/>
         </svg>
         <p><b>+100 point</b> score-improvement guarantee — or your next term of prep is on us.</p>
       </div>
     </section>
+
+    <!-- ======= ARCHETYPES ======= -->
+    <section class="band" id="archetypes">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">Built for who you are</span>
+        <h2>Four candidates.<br>Four honest paths.</h2>
+        <p>Your bottleneck isn't everyone's bottleneck. Start exactly where you actually stand.</p>
+      </div>
+      <div class="arch-grid">
+        <a class="arch" href="archetype.html?type=engineer" data-reveal>
+          <span class="num">01</span>
+          <h3>The engineering grad</h3>
+          <p>You're strong at Quant. We'll make Verbal the section that stops quietly costing you the 700s.</p>
+          <span class="link-arrow">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="arch" href="archetype.html?type=working-pro" data-reveal>
+          <span class="num">02</span>
+          <h3>The working professional</h3>
+          <p>Limited hours, measured precisely. A plan that respects a 60-hour week and wastes none of it.</p>
+          <span class="link-arrow">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="arch" href="archetype.html?type=retaker" data-reveal>
+          <span class="num">03</span>
+          <h3>The retaker</h3>
+          <p>You don't need to relearn the GMAT. You need the handful of points you keep leaking, mock after mock.</p>
+          <span class="link-arrow">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+        <a class="arch" href="archetype.html?type=non-engineer" data-reveal>
+          <span class="num">04</span>
+          <h3>The non-engineer</h3>
+          <p>Quant rebuilt from the ground up — no assumed shortcuts, no eye-rolls. Your verbal instinct is the edge.</p>
+          <span class="link-arrow">Read more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ======= HOW IT'S DIFFERENT ======= -->
+    <section class="band" id="difference">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">How prep is different here</span>
+        <h2>The work a 99th-percentiler does by instinct — done for you.</h2>
+      </div>
+      <div class="diff-grid">
+        <div class="diff" data-reveal>
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></span>
+          <h3>Deep mock analysis as standard</h3>
+          <p>Every mock is dissected — selection, execution, timing — not just handed back a score. The default, never a paid add-on.</p>
+        </div>
+        <div class="diff" data-reveal>
+          <span class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg></span>
+          <h3>Program-aware targeting</h3>
+          <p>We target the score each school actually weights against your profile — not one generic percentile goal for everyone.</p>
+        </div>
+        <div class="diff" data-reveal>
+          <span class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16l4-5 3 3 5-7"/></svg></span>
+          <h3>The 700-to-760 climb</h3>
+          <p>The last 60 points aren't more syllabus. They're sharper selection and fewer unforced errors. That's the whole game.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======= HONESTY BAND ======= -->
+    <section class="band honesty" id="honesty">
+      <div data-reveal>
+        <span class="kicker">The Honest Perimeter</span>
+        <div class="big">What we don't do — stated plainly.</div>
+      </div>
+      <div class="honesty-list" data-reveal>
+        <div class="hon-item">
+          <div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg> No score guarantees</div>
+          <p>No one can honestly promise a number. We promise the truth about where you stand and what moves it.</p>
+        </div>
+        <div class="hon-item">
+          <div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg> No gamification</div>
+          <p>No streaks, no coins, no confetti. Your attention belongs on the mock and what it's telling you.</p>
+        </div>
+        <div class="hon-item">
+          <div class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg> No classroom replacement</div>
+          <p>We don't teach you the GMAT from zero. We make the prep you're already doing measurably sharper.</p>
+        </div>
+      </div>
+      <div class="foot" data-reveal>
+        <span>Counter-positioning, calmly stated. We'd rather you trust us than be dazzled.</span>
+        <a class="link-arrow" href="#">Read the full Honest Perimeter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+
+    <!-- ======= SOCIAL PROOF ======= -->
+    <section class="band">
+      <div class="social-full">
+        <div class="stat-card" data-reveal><div class="n">+58</div><div class="c">median GMAT point lift, beta cohort (mock 1 → mock 10)</div></div>
+        <div class="stat-card" data-reveal><div class="n">73%</div><div class="c">of retakers found their leak inside the first week</div></div>
+        <div class="stat-card" data-reveal><div class="n">11 min</div><div class="c">average exam time recovered through better selection</div></div>
+      </div>
+    </section>
+
+    <!-- ======= PRICING ======= -->
+    <section class="band" id="pricing">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">Pricing, in the open</span>
+        <h2>Prices visible.<br>No friction to see them.</h2>
+        <p>Start with the free diagnostic. Upgrade only once you've seen the truth for yourself.</p>
+      </div>
+      <div class="price-grid">
+        <div class="tier" data-reveal>
+          <div class="name">Diagnostic</div>
+          <div class="price">Free</div>
+          <div class="desc">Your honest baseline in one sitting.</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> 2-hour adaptive diagnostic</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Sectional + selection breakdown</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Your archetype &amp; first fix-list</li>
+          </ul>
+          <a class="btn btn-ghost" href="#">Start free</a>
+        </div>
+        <div class="tier featured" data-reveal>
+          <div class="name">Season</div>
+          <div class="price">$290 <small>/ attempt cycle</small></div>
+          <div class="desc">The full season, every mock dissected.</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Deep analysis on every mock</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Program-aware score targeting</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Weekly fix-list &amp; selection drills</li>
+          </ul>
+          <a class="btn btn-primary" href="#">Choose Season</a>
+        </div>
+        <div class="tier" data-reveal>
+          <div class="name">Mastery</div>
+          <div class="price">$490 <small>/ attempt cycle</small></div>
+          <div class="desc">Season, plus a human in the loop.</div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Everything in Season</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Monthly mentor mock review</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5L20 7"/></svg> Essay &amp; interview readiness track</li>
+          </ul>
+          <a class="btn btn-ghost" href="#">Choose Mastery</a>
+        </div>
+      </div>
+      <div class="price-foot" data-reveal>All plans include the Honest Perimeter.
+        <a class="link-arrow" href="#">See full pricing <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+
+    <!-- ======= FOOTER ======= -->
+    <footer>
+      <div class="foot-grid">
+        <div>
+          <a class="brand" href="#"><span class="glyph"><i></i><i></i><i></i><i></i></span> <span><b>Score</b>Forge</span></a>
+          <p class="tag">Prep that tells you the truth. GMAT &amp; GRE, into the top B-schools.</p>
+        </div>
+        <div class="foot-col">
+          <h4>For candidates</h4>
+          <a href="archetype.html?type=engineer">Engineering grad</a>
+          <a href="archetype.html?type=working-pro">Working professional</a>
+          <a href="archetype.html?type=retaker">Retaker</a>
+          <a href="archetype.html?type=non-engineer">Non-engineer</a>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <a href="#">Honest Perimeter</a>
+          <a href="#">About</a>
+          <a href="#">Blog</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="foot-col">
+          <h4>Account</h4>
+          <a href="#">Log in</a>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 ScoreForge. Built calmly.</span>
+        <span>No streaks. No coins. No noise.</span>
+      </div>
+    </footer>
   </main>
 
+  <!-- ======= DEMO STATE SWITCHER ======= -->
+  <div class="switcher" role="group" aria-label="Preview homepage states">
+    <span>State</span>
+    <button data-set="cold" class="on">Cold launch</button>
+    <button data-set="auth">Logged in</button>
+    <button data-set="mid">Mid-diagnostic</button>
+  </div>
+
 <script>
-  // ---- staggered load-in ----
+  // ---- staggered load-in for the hero ----
   window.addEventListener('load', () => requestAnimationFrame(() =>
     document.getElementById('shell').classList.add('ready')));
+
+  // ---- demo state switcher (reflects the spec's States section) ----
+  const sw = document.querySelector('.switcher');
+  sw.addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.body.dataset.state = b.dataset.set;
+    sw.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+  });
+
+  // ---- reveal sections on scroll ----
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
 
   // ---- golden-ratio phyllotaxis (Fibonacci spiral) ----
   // Seeds placed by the 137.5° golden angle — the same pattern as a sunflower head,
@@ -450,9 +560,8 @@
 
     const GOLDEN = Math.PI * (3 - Math.sqrt(5));  // 137.5° golden angle (radians)
     const PHI = (1 + Math.sqrt(5)) / 2;           // 1.61803… golden ratio
-    const N = 760;                                // number of seeds
+    const N = 760;
 
-    // mark Fibonacci indices so we can accent them in red
     const fib = new Set();
     (function () { let a = 1, b = 2; while (b < N) { fib.add(b); const n = a + b; a = b; b = n; } })();
 
@@ -464,26 +573,21 @@
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       cx = W / 2; cy = H / 2;
       maxR = Math.min(W, H) * 0.46;
-      spacing = maxR / Math.sqrt(N);              // so the outermost seed lands near maxR
+      spacing = maxR / Math.sqrt(N);
     }
     resize();
     window.addEventListener('resize', resize);
 
-    // ---- pointer state for the cursor "expand" lens ----
     const mouse = { x: 0, y: 0, inside: false, infl: 0 };
     canvas.addEventListener('pointermove', (e) => {
       const r = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - r.left;
-      mouse.y = e.clientY - r.top;
-      mouse.inside = true;
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.inside = true;
     });
     canvas.addEventListener('pointerleave', () => { mouse.inside = false; });
 
-    // faint logarithmic golden spiral overlay: r = a · φ^(2θ/π)
     function drawGoldenSpiral(rot) {
       ctx.beginPath();
-      const a = spacing * 0.85;
-      let started = false;
+      const a = spacing * 0.85; let started = false;
       for (let th = 0; th < Math.PI * 8; th += 0.05) {
         const r = a * Math.pow(PHI, (2 * th) / Math.PI);
         if (r > maxR * 1.04) break;
@@ -491,18 +595,15 @@
         const y = cy + Math.sin(th + rot) * r;
         if (!started) { ctx.moveTo(x, y); started = true; } else { ctx.lineTo(x, y); }
       }
-      ctx.strokeStyle = 'rgba(240,53,63,0.30)';
-      ctx.lineWidth = 1.2;
-      ctx.stroke();
+      ctx.strokeStyle = 'rgba(223,106,38,0.32)'; ctx.lineWidth = 1.2; ctx.stroke();
     }
 
     let t = 0;
     function frame() {
       ctx.clearRect(0, 0, W, H);
-      t += 0.0016;                                // slow, contemplative rotation
-
+      t += 0.0016;
       mouse.infl += ((mouse.inside ? 1 : 0) - mouse.infl) * 0.08;
-      const RAD = Math.min(W, H) * 0.30;          // size of the expand area
+      const RAD = Math.min(W, H) * 0.30;
 
       drawGoldenSpiral(-t * 1.4);
 
@@ -512,22 +613,20 @@
         let sx = cx + Math.cos(ang) * rad;
         let sy = cy + Math.sin(ang) * rad;
 
-        const norm = i / N;                       // 0 centre .. 1 edge
+        const norm = i / N;
         const isFib = fib.has(i);
         let size = 0.6 + norm * 2.0;
         let alpha = 0.22 + norm * 0.62;
 
-        // ---- cursor expansion: push seeds outward & enlarge near the pointer ----
         if (mouse.infl > 0.01) {
           const dx = sx - mouse.x, dy = sy - mouse.y;
           const d = Math.hypot(dx, dy);
           if (d < RAD) {
-            const f = 1 - d / RAD;                // 0 at edge .. 1 at centre
+            const f = 1 - d / RAD;
             const fall = f * f * mouse.infl;
-            const push = fall * RAD * 0.42;       // outward shift = area expands
+            const push = fall * RAD * 0.42;
             const inv = 1 / (d || 0.0001);
-            sx += dx * inv * push;
-            sy += dy * inv * push;
+            sx += dx * inv * push; sy += dy * inv * push;
             size *= 1 + fall * 2.4;
             alpha = Math.min(1, alpha + fall * 0.5);
           }
@@ -535,10 +634,9 @@
 
         ctx.beginPath();
         ctx.arc(sx, sy, Math.max(0.5, isFib ? size * 1.7 : size), 0, Math.PI * 2);
-        // Fibonacci-indexed seeds glow red; the rest are warm off-white
         ctx.fillStyle = isFib
-          ? 'rgba(240,53,63,' + Math.min(1, alpha + 0.25).toFixed(3) + ')'
-          : 'rgba(236,230,218,' + alpha.toFixed(3) + ')';
+          ? 'rgba(223,106,38,' + Math.min(1, alpha + 0.25).toFixed(3) + ')'
+          : 'rgba(33,28,20,' + alpha.toFixed(3) + ')';
         ctx.fill();
       }
       requestAnimationFrame(frame);
