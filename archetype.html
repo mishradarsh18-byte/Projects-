@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ScoreForge — Archetype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:#f4efe3; --panel:#fbf8f1; --panel-2:#fffdf8;
+    --ink:#211c14; --ink-dim:#6f665a; --ink-faint:#9a9082;
+    --accent:#df6a26; --accent-d:#c4571a; --accent-ink:#fff7f1; --yellow:#f2b211; --green:#3a9d5d;
+    --line:rgba(33,28,20,0.12); --frame:rgba(33,28,20,0.20);
+    --radius:999px; --px:clamp(24px,3.4vw,50px);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+  body {
+    background:#e6dcc8;
+    background-image:radial-gradient(120% 90% at 50% -10%, #efe6d4 0%, #e3d8c2 55%, #d8ccb2 100%);
+    color:var(--ink); font-family:"Archivo",system-ui,sans-serif; line-height:1.55;
+    min-height:100vh; display:flex; justify-content:center; padding:clamp(12px,3vw,48px);
+    -webkit-font-smoothing:antialiased; letter-spacing:.01em;
+  }
+  ::selection { background:var(--yellow); color:var(--ink); }
+  a { color:inherit; text-decoration:none; }
+
+  .shell { width:min(1180px,100%); background:var(--bg); border:1px solid var(--frame); box-shadow:0 50px 120px -40px rgba(0,0,0,.55); position:relative; overflow:hidden; }
+  .shell::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:6; opacity:.045; mix-blend-mode:multiply; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .btn { display:inline-flex; align-items:center; gap:10px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13px; letter-spacing:.14em; text-transform:uppercase; padding:15px 26px; border:1px solid transparent; transition:transform .18s, box-shadow .25s, background .2s, border-color .2s, color .2s; }
+  .btn svg { width:15px; height:15px; }
+  .btn-primary { background:var(--accent); color:var(--accent-ink); }
+  .btn-primary:hover { background:#ef7a33; transform:translateY(-2px); box-shadow:0 16px 32px -12px var(--accent); }
+  .btn-ghost { background:transparent; border-color:var(--frame); color:var(--ink); }
+  .btn-ghost:hover { border-color:var(--ink); transform:translateY(-2px); }
+  .kicker { display:inline-block; font-size:11px; letter-spacing:.22em; text-transform:uppercase; font-weight:700; color:var(--accent); }
+  .link-arrow { display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:13px; color:var(--accent); }
+  .link-arrow svg { width:14px; height:14px; transition:transform .2s; }
+  .link-arrow:hover svg { transform:translateX(4px); }
+
+  /* nav */
+  nav { display:flex; align-items:center; justify-content:space-between; padding:22px var(--px); border-bottom:1px solid var(--line); position:relative; z-index:5; }
+  .brand { display:flex; align-items:center; gap:11px; font-weight:700; font-size:19px; letter-spacing:-.01em; }
+  .brand .glyph { width:24px; height:24px; flex:none; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:3px; }
+  .brand .glyph i { display:block; background:var(--ink); border-radius:2px; }
+  .brand .glyph i:nth-child(2){ background:var(--accent); border-radius:50%; }
+  .brand .glyph i:nth-child(3){ opacity:.55; }
+  .brand b { font-weight:700; } .brand span { color:var(--ink-dim); font-weight:500; }
+  .nav-right { display:flex; align-items:center; gap:18px; }
+  .nav-right .login { font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+  @media (max-width:640px){ .nav-right .login { display:none; } }
+
+  /* hero */
+  .lp-hero { padding:clamp(32px,4vw,58px) var(--px) clamp(28px,3vw,42px); border-bottom:1px solid var(--line); max-width:none; }
+  .back { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--ink-dim); margin-bottom:24px; transition:color .2s; }
+  .back:hover { color:var(--accent-d); }
+  .back svg { width:14px; height:14px; }
+  .lp-hero h1 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(34px,5.4vw,72px); line-height:.96; letter-spacing:.01em; margin-top:14px; max-width:18ch; }
+  .pain { margin-top:24px; max-width:62ch; font-size:clamp(15px,1.25vw,18px); line-height:1.7; color:var(--ink-dim); }
+  .pain b { color:var(--ink); font-weight:600; }
+  .lp-hero .cta { margin-top:30px; display:flex; align-items:center; gap:18px; flex-wrap:wrap; }
+  .lp-hero .note { font-size:13px; color:var(--ink-faint); }
+
+  /* section */
+  .band { padding:clamp(44px,6vw,84px) var(--px); border-bottom:1px solid var(--line); position:relative; z-index:2; }
+  .sec-head { max-width:60ch; margin-bottom:36px; }
+  .sec-head h2 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(26px,3.6vw,46px); line-height:.98; letter-spacing:.01em; margin-top:14px; }
+  .sec-head p { margin-top:14px; color:var(--ink-dim); font-size:15.5px; max-width:52ch; }
+
+  /* chart: bars */
+  .chart { background:var(--panel); border:1px solid var(--line); padding:30px; }
+  .bigstat { display:flex; align-items:baseline; gap:18px; padding-bottom:22px; margin-bottom:24px; border-bottom:1px dashed var(--line); flex-wrap:wrap; }
+  .bigstat .bs-n { font-family:"Anton",sans-serif; font-size:clamp(46px,7vw,76px); line-height:.9; color:var(--accent); }
+  .bigstat .bs-l { font-size:15px; color:var(--ink-dim); max-width:34ch; }
+  .bars { display:flex; flex-direction:column; gap:15px; }
+  .bar-row { display:grid; grid-template-columns:120px 1fr auto; align-items:center; gap:16px; }
+  .bar-row .bl { font-size:13px; font-weight:600; color:var(--ink); }
+  .bar-row .bt { height:12px; background:#ece2cf; border-radius:999px; overflow:hidden; }
+  .bar-row .bf { display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,var(--yellow),var(--accent)); transition:width 1.1s cubic-bezier(.16,1,.3,1); }
+  .bar-row .bv { font-size:12.5px; color:var(--ink-dim); white-space:nowrap; }
+
+  /* chart: misdiagnosis rows */
+  .mis { display:flex; flex-direction:column; gap:0; }
+  .mis-row { display:grid; grid-template-columns:1fr 150px 54px; align-items:center; gap:18px; padding:18px 0; border-bottom:1px solid var(--line); }
+  .mis-row:last-child { border-bottom:none; }
+  .mis-pair { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .mis-pair .thought { font-size:14.5px; color:var(--ink-faint); text-decoration:line-through; text-decoration-color:var(--accent); }
+  .mis-pair .arr { color:var(--accent); display:inline-flex; } .mis-pair .arr svg { width:16px; height:16px; }
+  .mis-pair .actual { font-size:15px; font-weight:600; color:var(--ink); }
+  .mis-meter { height:10px; background:#ece2cf; border-radius:999px; overflow:hidden; }
+  .mis-meter span { display:block; height:100%; width:0; background:var(--accent); border-radius:999px; transition:width 1.1s cubic-bezier(.16,1,.3,1); }
+  .mis-pct { font-family:"Anton",sans-serif; font-size:20px; color:var(--accent-d); text-align:right; }
+  @media (max-width:680px){ .mis-row { grid-template-columns:1fr 60px; } .mis-meter { display:none; } }
+
+  .chart-cap { margin-top:18px; font-size:14px; color:var(--ink-dim); max-width:60ch; font-style:italic; }
+
+  /* response 3 cards */
+  .resp-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  .resp { background:var(--panel); border:1px solid var(--line); padding:26px; transition:transform .2s, border-color .25s, box-shadow .25s; }
+  .resp:hover { transform:translateY(-4px); border-color:rgba(223,106,38,.45); box-shadow:0 22px 46px -28px rgba(33,28,20,.25); }
+  .resp .rn { width:40px; height:40px; display:grid; place-items:center; background:rgba(223,106,38,.12); border:1px solid rgba(223,106,38,.3); font-family:"Anton",sans-serif; color:var(--accent-d); margin-bottom:18px; }
+  .resp h3 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:19px; letter-spacing:.01em; line-height:1.05; margin-bottom:9px; }
+  .resp p { font-size:14px; color:var(--ink-dim); line-height:1.55; }
+  @media (max-width:780px){ .resp-grid { grid-template-columns:1fr; } }
+
+  /* targets */
+  .targets { display:flex; flex-direction:column; border:1px solid var(--line); background:var(--panel); }
+  .tgt { display:grid; grid-template-columns:1.1fr 1.4fr 150px 56px; align-items:center; gap:18px; padding:20px 24px; border-bottom:1px solid var(--line); }
+  .tgt:last-child { border-bottom:none; }
+  .tgt .prof { font-weight:700; font-size:14.5px; }
+  .tgt .verd { font-size:14px; color:var(--ink-dim); }
+  .tgt .meter { height:10px; background:#ece2cf; border-radius:999px; overflow:hidden; }
+  .tgt .meter span { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--yellow),var(--accent)); border-radius:999px; transition:width 1.1s cubic-bezier(.16,1,.3,1); }
+  .tgt .pct { font-family:"Anton",sans-serif; font-size:19px; color:var(--accent-d); text-align:right; }
+  @media (max-width:780px){ .tgt { grid-template-columns:1fr 56px; } .tgt .verd,.tgt .meter { display:none; } }
+
+  /* cta band */
+  .cta-band { background:#f6ecd6; text-align:center; }
+  .cta-band h2 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(26px,4vw,48px); line-height:1; margin-bottom:24px; }
+  .cta-band .btn { font-size:14px; }
+  .cta-band .note { display:block; margin-top:14px; font-size:13px; color:var(--ink-faint); }
+
+  /* footer */
+  footer { padding:46px var(--px) 32px; position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  footer .tag { font-size:13px; color:var(--ink-faint); }
+  .foot-links { display:flex; gap:22px; flex-wrap:wrap; }
+  .foot-links a { font-size:13.5px; color:var(--ink-dim); transition:color .2s; }
+  .foot-links a:hover { color:var(--ink); }
+
+  [data-reveal] { opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1); }
+  [data-reveal].in { opacity:1; transform:none; }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <nav>
+      <a class="brand" href="index.html"><span class="glyph"><i></i><i></i><i></i><i></i></span> <span><b>Score</b>Forge</span></a>
+      <div class="nav-right">
+        <a class="login" href="#">Log in</a>
+        <a class="btn btn-primary" href="index.html">Take the diagnostic</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="lp-hero">
+      <a class="back" href="index.html#archetypes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> All candidates</a>
+      <span class="kicker" id="a-kicker">Archetype</span>
+      <h1 id="a-tagline">—</h1>
+      <p class="pain" id="a-pain">—</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="index.html">Take the diagnostic — 2 hours, free
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <span class="note">No card required.</span>
+      </div>
+    </section>
+
+    <!-- THE DATA -->
+    <section class="band">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">The data</span>
+        <h2 id="d-title">—</h2>
+      </div>
+      <div class="chart" id="d-chart" data-reveal></div>
+      <p class="chart-cap" id="d-cap" data-reveal></p>
+    </section>
+
+    <!-- HOW SCOREFORGE RESPONDS -->
+    <section class="band">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">How ScoreForge responds</span>
+        <h2>Three ways we attack it.</h2>
+      </div>
+      <div class="resp-grid" id="resp"></div>
+    </section>
+
+    <!-- REALISTIC TARGETS -->
+    <section class="band">
+      <div class="sec-head" data-reveal>
+        <span class="kicker">Realistic targets</span>
+        <h2>Call-probability at sample profiles.</h2>
+        <p>Honest ranges, not promises. Your free diagnostic sharpens these to your actual profile.</p>
+      </div>
+      <div class="targets" id="targets" data-reveal></div>
+    </section>
+
+    <!-- DIAGNOSTIC CTA -->
+    <section class="band cta-band" data-reveal>
+      <h2 id="cta-h">—</h2>
+      <a class="btn btn-primary" href="index.html">Take the diagnostic — 2 hours, free
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <span class="note">No card required. Honest baseline in one sitting.</span>
+    </section>
+
+    <footer>
+      <span class="tag">© 2026 ScoreForge · Prep that tells you the truth.</span>
+      <div class="foot-links">
+        <a href="archetype.html?type=engineer">Engineering grad</a>
+        <a href="archetype.html?type=working-pro">Working professional</a>
+        <a href="archetype.html?type=retaker">Retaker</a>
+        <a href="archetype.html?type=non-engineer">Non-engineer</a>
+        <a href="index.html#honesty">Honest Perimeter</a>
+      </div>
+    </footer>
+  </main>
+
+<script>
+  // ===== Archetype content, keyed by URL ?type= =====
+  const DATA = {
+    "engineer": {
+      kicker: "For the engineering grad",
+      tagline: "Verbal is the wall. Selection is the leverage.",
+      ctaH: "Find the points selection is costing you.",
+      pain: `You've done the Quant. You can do the Quant in your sleep. But the score won't move, and you're sure it's <b>Verbal</b> — so you grind more RC sets, and nothing changes. Here's what no one tells you: above the 90th percentile it isn't more questions, it's <b>which</b> questions you choose and when you cut your losses. You're not under-prepared. You're over-attempting. Selection is the lever you were never taught to pull.`,
+      data: {
+        title: "The percentile cliff above 700",
+        kind: "bars",
+        items: [
+          { l:"650 → 680", w:18, v:"baseline effort" },
+          { l:"680 → 700", w:30, v:"" },
+          { l:"700 → 720", w:52, v:"" },
+          { l:"720 → 740", w:74, v:"" },
+          { l:"740 → 760", w:96, v:"diminishing returns" },
+        ],
+        cap: "Each +20 points above 700 costs disproportionately more — and almost none of it is new syllabus. That's why volume practice plateaus."
+      },
+      resp: [
+        { h:"Selection drills, not more sets", p:"We score your choices — what you attempted, skipped, and committed to — not just your answers." },
+        { h:"Verbal, diagnosed by type", p:"RC vs CR vs SC, accuracy vs timing, isolated. You fix the actual leak, not 'Verbal' in general." },
+        { h:"A timing model for you", p:"When to skip, when to commit — mapped to your own fatigue curve across the section." },
+      ],
+      targets: [
+        { prof:"GMAT 700, 3y SDE", verd:"Strong mid-tier, stretch at M7", pct:55 },
+        { prof:"GMAT 730 + selection fix", verd:"Competitive across M7", pct:78 },
+        { prof:"GMAT 750, sharp selection", verd:"Strong across the board", pct:88 },
+      ]
+    },
+    "working-pro": {
+      kicker: "For the working professional",
+      tagline: "Prep that knows you had a long day.",
+      ctaH: "Ninety honest minutes. Let's spend them right.",
+      pain: `It's 9pm. You've been in meetings since morning, and the mock you scheduled is still sitting there. You don't need motivation — you need a plan that assumes you have <b>ninety honest minutes</b>, not four hours, and spends them on the two things that actually move your score. Most prep is built for someone with a free summer. You don't have a free summer. You have a calendar, a job, and a number you need to hit anyway.`,
+      data: {
+        title: "What your work-ex is actually worth",
+        kind: "bars",
+        items: [
+          { l:"ISB", w:88, v:"strong work-ex weighting" },
+          { l:"INSEAD", w:76, v:"" },
+          { l:"Booth", w:64, v:"" },
+          { l:"Kellogg", w:58, v:"" },
+        ],
+        cap: "Your years aren't a footnote. At some programs, a strong work-ex profile is worth more to your case than 20 GMAT points."
+      },
+      resp: [
+        { h:"90-minute prep blocks", p:"Every session is engineered for the time you actually have — not an idealized study day." },
+        { h:"Async mock analysis", p:"Submit the mock at night; we dissect it overnight. You wake up to a ranked fix-list." },
+        { h:"Profile-weighted targets", p:"Your work-ex is factored into every score goal, so you aim at the right number, not the loudest one." },
+      ],
+      targets: [
+        { prof:"6y, GMAT 690", verd:"Competitive with strong essays", pct:70 },
+        { prof:"8y leadership, GMAT 710", verd:"Strong at M7", pct:82 },
+        { prof:"4y, GMAT 720", verd:"Competitive, profile-dependent", pct:74 },
+      ]
+    },
+    "retaker": {
+      kicker: "For the retaker",
+      tagline: "This time, get the diagnosis right.",
+      ctaH: "Get the diagnosis right this time.",
+      pain: `You've taken it before. You studied harder than most people you know, and the score came back almost the same — and the worst part is you still don't really know <b>why</b>. You think it's Quant. Or timing. Or nerves. The reason your second attempt risks looking like your first is simple: nobody ever told you what actually went wrong. You don't need another course. You need the correct diagnosis, once.`,
+      data: {
+        title: "What retakers think went wrong — vs what did",
+        kind: "misdiag",
+        items: [
+          { thought:"It's my Quant", actual:"Timing & selection", pct:62 },
+          { thought:"I need more questions", actual:"Repeated error types", pct:48 },
+          { thought:"Test-day nerves", actual:"Untracked guessing", pct:31 },
+        ],
+        cap: "Most retake plateaus aren't a knowledge gap. They're a misdiagnosis inherited, uncorrected, from the first attempt."
+      },
+      resp: [
+        { h:"Error-type forensics", p:"Every wrong answer tagged by true cause — concept, timing, selection, or careless — across your history." },
+        { h:"Attempt-over-attempt diff", p:"Exactly what changed between attempts, and what stubbornly didn't. No guessing." },
+        { h:"One honest diagnosis", p:"Before you spend another rupee on content, you get the single correct reason your score stalled." },
+      ],
+      targets: [
+        { prof:"2nd attempt, stuck at 690", verd:"+30–40 realistic with the right fix", pct:68 },
+        { prof:"3rd attempt, 710", verd:"Ceiling raise via selection", pct:75 },
+        { prof:"Retake after 2 years", verd:"Fresh baseline first, then target", pct:60 },
+      ]
+    },
+    "non-engineer": {
+      kicker: "For the non-engineer",
+      tagline: "Quant from the ground up — without the humiliation.",
+      ctaH: "Rebuild Quant. Raise your ceiling.",
+      pain: `Somewhere along the way you decided you 'aren't a maths person,' and every Quant section since has quietly confirmed it. But here's what the engineers won't tell you: the GMAT doesn't test engineering. It tests a narrow, <b>learnable</b> band of arithmetic, logic, and reading the question correctly. Your verbal instincts are an edge most candidates would kill for. We rebuild Quant from the floor — no assumed shortcuts, no eye-rolls — and your ceiling is higher than the story you've been told.`,
+      data: {
+        title: "The fact no one mentions",
+        kind: "stat",
+        bsN: "1 in 3",
+        bsL: "top-decile scorers come from non-engineering backgrounds — being one is rarer, and rarer stands out in the pool.",
+        items: [
+          { l:"ISB", w:70, v:"academic-diversity credit (relative)" },
+          { l:"INSEAD", w:58, v:"" },
+          { l:"Booth", w:52, v:"" },
+        ],
+        cap: "Scarcity is leverage. A strong score from a non-engineer reads louder — we target that, instead of pretending it doesn't matter."
+      },
+      resp: [
+        { h:"Quant rebuilt from arithmetic", p:"No assumed background, no shame. We start where you are and close gaps in order." },
+        { h:"Your verbal edge, banked", p:"We lock in the section you're already strong in, so it carries weight while Quant climbs." },
+        { h:"Diversity-aware targeting", p:"Your profile's scarcity is factored into every target — your edge, made explicit." },
+      ],
+      targets: [
+        { prof:"Humanities, GMAT 660", verd:"Competitive with profile boost", pct:64 },
+        { prof:"Commerce, GMAT 700", verd:"Strong; stands out in pool", pct:80 },
+        { prof:"Non-engineer, GMAT 720", verd:"Top-tier competitive", pct:86 },
+      ]
+    }
+  };
+
+  // ===== resolve archetype from URL =====
+  const params = new URLSearchParams(location.search);
+  const key = (params.get("type") || "engineer").toLowerCase();
+  const A = DATA[key] || DATA["engineer"];
+
+  document.title = "ScoreForge — " + A.kicker.replace(/^For the /, "");
+  document.getElementById("a-kicker").textContent = A.kicker;
+  document.getElementById("a-tagline").textContent = A.tagline;
+  document.getElementById("a-pain").innerHTML = A.pain;
+  document.getElementById("cta-h").textContent = A.ctaH;
+  document.getElementById("d-title").textContent = A.data.title;
+  document.getElementById("d-cap").textContent = A.data.cap;
+
+  // ----- render the data chart -----
+  const chart = document.getElementById("d-chart");
+  const d = A.data;
+  const arrow = '<span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>';
+  if (d.kind === "bars" || d.kind === "stat") {
+    let html = "";
+    if (d.kind === "stat") {
+      html += `<div class="bigstat"><div class="bs-n">${d.bsN}</div><div class="bs-l">${d.bsL}</div></div>`;
+    }
+    html += '<div class="bars">';
+    d.items.forEach(it => {
+      html += `<div class="bar-row"><span class="bl">${it.l}</span><span class="bt"><span class="bf" data-w="${it.w}%"></span></span><span class="bv">${it.v||""}</span></div>`;
+    });
+    html += "</div>";
+    chart.innerHTML = html;
+  } else if (d.kind === "misdiag") {
+    let html = '<div class="mis">';
+    d.items.forEach(it => {
+      html += `<div class="mis-row">
+        <div class="mis-pair"><span class="thought">"${it.thought}"</span>${arrow}<span class="actual">${it.actual}</span></div>
+        <div class="mis-meter"><span data-w="${it.pct}%"></span></div>
+        <div class="mis-pct">${it.pct}%</div>
+      </div>`;
+    });
+    html += "</div>";
+    chart.innerHTML = html;
+  }
+
+  // ----- render response cards -----
+  document.getElementById("resp").innerHTML = A.resp.map((r,i) =>
+    `<div class="resp" data-reveal><div class="rn">${String(i+1).padStart(2,"0")}</div><h3>${r.h}</h3><p>${r.p}</p></div>`
+  ).join("");
+
+  // ----- render targets -----
+  document.getElementById("targets").innerHTML = A.targets.map(t =>
+    `<div class="tgt"><span class="prof">${t.prof}</span><span class="verd">${t.verd}</span><span class="meter"><span data-w="${t.pct}%"></span></span><span class="pct">${t.pct}%</span></div>`
+  ).join("");
+
+  // ===== reveal + animate bars on scroll =====
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in");
+      e.target.querySelectorAll("[data-w]").forEach(b => { b.style.width = b.dataset.w; });
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+  // bars that aren't inside a data-reveal wrapper (the chart fills) — observe the chart too
+  io.observe(chart);
+</script>
+</body>
+</html>
