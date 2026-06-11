@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ScoreForge — The Honest Perimeter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:#f4efe3; --panel:#fbf8f1; --panel-2:#fffdf8;
+    --ink:#211c14; --ink-dim:#6f665a; --ink-faint:#9a9082;
+    --accent:#df6a26; --accent-d:#c4571a; --accent-ink:#fff7f1; --yellow:#f2b211; --green:#3a9d5d;
+    --line:rgba(33,28,20,0.12); --frame:rgba(33,28,20,0.20);
+    --radius:999px; --px:clamp(24px,3.4vw,50px);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+  body {
+    background:#e6dcc8;
+    background-image:radial-gradient(120% 90% at 50% -10%, #efe6d4 0%, #e3d8c2 55%, #d8ccb2 100%);
+    color:var(--ink); font-family:"Archivo",system-ui,sans-serif; line-height:1.55;
+    min-height:100vh; display:flex; justify-content:center; padding:clamp(12px,3vw,48px);
+    -webkit-font-smoothing:antialiased; letter-spacing:.01em;
+  }
+  ::selection { background:var(--yellow); color:var(--ink); }
+  a { color:inherit; text-decoration:none; }
+
+  .shell { width:min(1100px,100%); background:var(--bg); border:1px solid var(--frame); box-shadow:0 50px 120px -40px rgba(0,0,0,.55); position:relative; overflow:hidden; }
+  .shell::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:6; opacity:.045; mix-blend-mode:multiply; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+
+  .btn { display:inline-flex; align-items:center; gap:10px; cursor:pointer; font-family:inherit; font-weight:700; font-size:13px; letter-spacing:.14em; text-transform:uppercase; padding:15px 26px; border:1px solid transparent; transition:transform .18s, box-shadow .25s, background .2s, border-color .2s, color .2s; }
+  .btn svg { width:15px; height:15px; }
+  .btn-primary { background:var(--accent); color:var(--accent-ink); }
+  .btn-primary:hover { background:#ef7a33; transform:translateY(-2px); box-shadow:0 16px 32px -12px var(--accent); }
+  .kicker { display:inline-block; font-size:11px; letter-spacing:.22em; text-transform:uppercase; font-weight:700; color:var(--accent); }
+  .link-arrow { display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:13.5px; color:var(--accent-d); }
+  .link-arrow svg { width:14px; height:14px; transition:transform .2s; }
+  .link-arrow:hover svg { transform:translateX(4px); }
+
+  /* nav */
+  nav { display:flex; align-items:center; justify-content:space-between; padding:22px var(--px); border-bottom:1px solid var(--line); position:relative; z-index:5; }
+  .brand { display:flex; align-items:center; gap:11px; font-weight:700; font-size:19px; letter-spacing:-.01em; }
+  .brand .glyph { width:24px; height:24px; flex:none; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr; gap:3px; }
+  .brand .glyph i { display:block; background:var(--ink); border-radius:2px; }
+  .brand .glyph i:nth-child(2){ background:var(--accent); border-radius:50%; }
+  .brand .glyph i:nth-child(3){ opacity:.55; }
+  .brand b { font-weight:700; } .brand span { color:var(--ink-dim); font-weight:500; }
+  .nav-right { display:flex; align-items:center; gap:18px; }
+  .nav-right .login { font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+  @media (max-width:640px){ .nav-right .login { display:none; } }
+
+  /* hero */
+  .lp-hero { padding:clamp(34px,4vw,62px) var(--px) clamp(30px,3vw,46px); border-bottom:1px solid var(--line); }
+  .back { display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:var(--ink-dim); margin-bottom:24px; transition:color .2s; }
+  .back:hover { color:var(--accent-d); }
+  .back svg { width:14px; height:14px; }
+  .lp-hero h1 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(36px,5.6vw,76px); line-height:.95; letter-spacing:.01em; margin-top:14px; max-width:16ch; }
+  .lp-hero .intro { margin-top:24px; max-width:60ch; font-size:clamp(15px,1.25vw,18px); line-height:1.7; color:var(--ink-dim); }
+  .lp-hero .intro b { color:var(--ink); font-weight:600; }
+  .meta-row { margin-top:26px; display:flex; gap:26px; flex-wrap:wrap; font-size:13px; color:var(--ink-faint); }
+  .meta-row span b { color:var(--ink); font-weight:700; }
+
+  /* perimeter list */
+  .perimeter { border-bottom:1px solid var(--line); }
+  .perm { display:grid; grid-template-columns:0.85fr 1.15fr; gap:30px; padding:clamp(28px,4vw,44px) var(--px); border-top:1px solid var(--line); position:relative; z-index:2; transition:background .25s; }
+  .perm:first-child { border-top:none; }
+  .perm:hover { background:var(--panel); }
+  .perm-head { display:flex; gap:16px; }
+  .perm-head .idx { font-family:"Anton",sans-serif; font-size:15px; color:var(--accent); padding-top:8px; }
+  .perm-head h3 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(22px,2.6vw,32px); line-height:1; letter-spacing:.01em; display:flex; align-items:flex-start; gap:12px; }
+  .perm-head h3 .x { width:26px; height:26px; flex:none; border:2px solid var(--accent); border-radius:50%; display:grid; place-items:center; margin-top:2px; }
+  .perm-head h3 .x svg { width:14px; height:14px; stroke:var(--accent); stroke-width:3; }
+  .perm-body p { color:var(--ink-dim); font-size:15px; line-height:1.65; }
+  .perm-body p b { color:var(--ink); font-weight:600; }
+  .perm-body .pointer { margin-top:14px; }
+  .perm-body .tag { display:inline-flex; align-items:center; gap:7px; margin-top:14px; font-size:12px; font-weight:600; letter-spacing:.04em; color:var(--accent-d); background:rgba(223,106,38,.1); border:1px solid rgba(223,106,38,.28); padding:6px 12px; border-radius:999px; }
+  @media (max-width:760px){ .perm { grid-template-columns:1fr; gap:16px; } }
+
+  /* where we might be wrong */
+  .wrong { background:#f6ecd6; padding:clamp(44px,6vw,80px) var(--px); position:relative; z-index:2; }
+  .wrong h2 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(26px,3.6vw,46px); line-height:.98; margin-top:14px; max-width:18ch; }
+  .wrong .lede { margin-top:16px; color:var(--ink-dim); font-size:16px; max-width:56ch; }
+  .wrong-list { margin-top:34px; display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .wrong-item { background:var(--bg); padding:26px; }
+  .wrong-item .n { font-family:"Anton",sans-serif; color:var(--accent); font-size:15px; margin-bottom:12px; }
+  .wrong-item p { color:var(--ink-dim); font-size:14px; line-height:1.6; }
+  .wrong .commit { margin-top:34px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  .wrong .commit span { font-size:15px; color:var(--ink); font-weight:500; max-width:50ch; }
+  @media (max-width:760px){ .wrong-list { grid-template-columns:1fr; } }
+
+  /* cta */
+  .cta-band { text-align:center; padding:clamp(44px,6vw,78px) var(--px); border-top:1px solid var(--line); position:relative; z-index:2; }
+  .cta-band h2 { font-family:"Anton",sans-serif; font-weight:400; text-transform:uppercase; font-size:clamp(26px,4vw,46px); line-height:1; margin-bottom:14px; }
+  .cta-band p { color:var(--ink-dim); font-size:15px; margin-bottom:26px; }
+  .cta-band .note { display:block; margin-top:14px; font-size:13px; color:var(--ink-faint); }
+
+  /* footer */
+  footer { padding:46px var(--px) 32px; position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; border-top:1px solid var(--line); }
+  footer .tag { font-size:13px; color:var(--ink-faint); }
+  .foot-links { display:flex; gap:22px; flex-wrap:wrap; }
+  .foot-links a { font-size:13.5px; color:var(--ink-dim); transition:color .2s; }
+  .foot-links a:hover { color:var(--ink); }
+
+  [data-reveal] { opacity:0; transform:translateY(20px); transition:opacity .7s ease, transform .7s cubic-bezier(.16,1,.3,1); }
+  [data-reveal].in { opacity:1; transform:none; }
+</style>
+</head>
+<body>
+  <main class="shell">
+    <nav>
+      <a class="brand" href="index.html"><span class="glyph"><i></i><i></i><i></i><i></i></span> <span><b>Score</b>Forge</span></a>
+      <div class="nav-right">
+        <a class="login" href="#">Log in</a>
+        <a class="btn btn-primary" href="index.html">Take the diagnostic</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="lp-hero">
+      <a class="back" href="index.html#honesty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 12H5M11 6l-6 6 6 6"/></svg> Home</a>
+      <span class="kicker">The Honest Perimeter</span>
+      <h1>What we don't do — and why.</h1>
+      <p class="intro" data-reveal>
+        Most prep platforms tell you everything they do. This page does the opposite. <b>Counter-positioning by
+        transparency:</b> the clearest way to know if we're a match is to read, before you sign up, exactly where
+        our edges are. If one of these is a dealbreaker for you — good. You just saved yourself two hours.
+      </p>
+      <div class="meta-row" data-reveal>
+        <span><b>6</b> explicit limits</span>
+        <span><b>Static</b> — no fine print, no asterisks</span>
+        <span><b>Published</b> before signup, not after</span>
+      </div>
+    </section>
+
+    <!-- THE SIX STATEMENTS -->
+    <section class="perimeter">
+
+      <div class="perm" data-reveal>
+        <div class="perm-head">
+          <span class="idx">01</span>
+          <h3><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></span> No classroom replacement</h3>
+        </div>
+        <div class="perm-body">
+          <p>ScoreForge is <b>digital-native</b>. We don't teach the GMAT or GRE from scratch, and we won't pretend a dashboard replaces a good teacher. If you need live instruction from zero, that's a real need — just not ours, and we'll point you somewhere honest instead of pretending otherwise.</p>
+          <a class="link-arrow pointer" href="#">Where to learn the fundamentals — channels &amp; courses we rate <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+
+      <div class="perm" data-reveal>
+        <div class="perm-head">
+          <span class="idx">02</span>
+          <h3><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></span> No 1:1 mentorship at scale</h3>
+        </div>
+        <div class="perm-body">
+          <p>Our deep mock analysis is the <b>analytical work</b> a mentor would otherwise do by hand — delivered on every mock, at scale. But the <b>relational</b> half of mentorship — accountability, a human who knows your story — is intentionally outside what we automate. We won't fake it with a chatbot.</p>
+          <span class="tag">Mentor-pairing — opt-in, planned for V2</span>
+        </div>
+      </div>
+
+      <div class="perm" data-reveal>
+        <div class="perm-head">
+          <span class="idx">03</span>
+          <h3><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></span> No temperament installation</h3>
+        </div>
+        <div class="perm-body">
+          <p>Exam-day composure is largely outside a platform's reach. We can <b>measure</b> your patterns under pressure — where fatigue lands, where guessing creeps in — and flag them honestly. We can't install calm. We monitor and surface; we don't claim to transform who you become on test day.</p>
+        </div>
+      </div>
+
+      <div class="perm" data-reveal>
+        <div class="perm-head">
+          <span class="idx">04</span>
+          <h3><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></span> No score guarantees</h3>
+        </div>
+        <div class="perm-body">
+          <p>Outcome guarantees are <b>marketing artifacts</b>. A single-sitting exam carries real variance no honest provider can promise away. We guarantee the quality of the analysis and the honesty of the diagnosis — never a number on a screen. Anyone who guarantees the number is selling you the variance.</p>
+        </div>
+      </div>
+
+      <div class="perm" data-reveal>
+        <div class="perm-head">
+          <span class="idx">05</span>
+          <h3><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></span> No essays, interviews or app consulting — in this module</h3>
+        </div>
+        <div class="perm-body">
+          <p>Essays, recommendations, school lists, and interviews are their own craft. <b>This module is test prep.</b> Mastery includes light readiness drills, not done-for-you consulting — and we say so plainly rather than blurring the line to look fuller than we are.</p>
+          <span class="tag">Admissions module — committed for V2</span>
+        </div>
+      </div>
+
+      <div class="perm" data-reveal>
+        <div class="perm-head">
+          <span class="idx">06</span>
+          <h3><span class="x"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18"/></svg></span> No other entrance exams</h3>
+        </div>
+        <div class="perm-body">
+          <p>We don't cover the SAT, LSAT, the Executive Assessment, or board exams. <b>Focus is the product:</b> we'd rather do GMAT and GRE properly than do every test passably. If your exam isn't here, we'll tell you on day one instead of upselling you something half-built.</p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- WHERE WE MIGHT BE WRONG -->
+    <section class="wrong">
+      <div data-reveal>
+        <span class="kicker">Where we might be wrong</span>
+        <h2>The limits we're least sure about.</h2>
+        <p class="lede">Counter-positioning cuts both ways. Here's where our own confidence is lowest — published, not buried in a footnote.</p>
+      </div>
+      <div class="wrong-list" data-reveal>
+        <div class="wrong-item">
+          <div class="n">A</div>
+          <p>Our selection model is trained on a beta cohort. Small-sample bias is real; we recalibrate openly as the data grows, and we'll show our work.</p>
+        </div>
+        <div class="wrong-item">
+          <div class="n">B</div>
+          <p>Program-weighting estimates are directional, not official admissions math. Treat them as honest hypotheses, not promises from a committee.</p>
+        </div>
+        <div class="wrong-item">
+          <div class="n">C</div>
+          <p>We may be overstating how much "selection" alone moves a stubborn score for some candidates. Where it doesn't, we'll say that to your face.</p>
+        </div>
+      </div>
+      <div class="commit" data-reveal>
+        <span>When we find we're wrong, we change the product and tell you what changed. That commitment is the entire point of this page.</span>
+        <a class="link-arrow" href="#">Read our open risks &amp; questions <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-band" data-reveal>
+      <h2>Still think we're a match?</h2>
+      <p>Then the only honest next step is to see where you actually stand.</p>
+      <a class="btn btn-primary" href="index.html">Take the diagnostic — 2 hours, free
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <span class="note">No card required. No score promised. Just the truth.</span>
+    </section>
+
+    <footer>
+      <span class="tag">© 2026 ScoreForge · Prep that tells you the truth.</span>
+      <div class="foot-links">
+        <a href="index.html#archetypes">Who it's for</a>
+        <a href="index.html#difference">How it's different</a>
+        <a href="index.html#pricing">Pricing</a>
+        <a href="index.html">Home</a>
+      </div>
+    </footer>
+  </main>
+
+<script>
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.14 });
+  document.querySelectorAll("[data-reveal]").forEach(el => io.observe(el));
+</script>
+</body>
+</html>
